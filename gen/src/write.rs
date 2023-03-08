@@ -424,7 +424,11 @@ fn check_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
         "static_assert(::std::is_enum<{}>::value, \"expected enum\");",
         enm.name.cxx,
     );
-    write!(out, "static_assert(sizeof({}) == sizeof(", enm.name.cxx);
+    write!(
+        out,
+        "static_assert(sizeof({}) == sizeof(",
+        enm.name.to_fully_qualified()
+    );
     write_atom(out, repr);
     writeln!(out, "), \"incorrect size\");");
     for variant in &enm.variants {
@@ -433,7 +437,9 @@ fn check_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
         writeln!(
             out,
             ">({}::{}) == {}, \"disagrees with the value in #[cxx::bridge]\");",
-            enm.name.cxx, variant.name.cxx, variant.discriminant,
+            enm.name.to_fully_qualified(),
+            variant.name.cxx,
+            variant.discriminant,
         );
     }
 }
